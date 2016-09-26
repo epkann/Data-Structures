@@ -24,5 +24,5 @@ func (s *Stack) Peek() (item interface{}) {
 
 
 func (s *Stack) Len() int {
-	return s.len
+	return len(s.stack)
 }
