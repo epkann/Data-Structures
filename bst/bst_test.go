@@ -8,7 +8,7 @@ func (i Int) Less(other Value) bool {
 	return i < other.(Int)
 }
 
-func TestTreeSize(t *testing.T) {
+func TestTree(t *testing.T) {
 	tree := new(Tree)
 	tree.Insert(Int(8))
 	tree.Insert(Int(5))
@@ -18,7 +18,7 @@ func TestTreeSize(t *testing.T) {
 	tree.Insert(Int(13))
 	tree.Insert(Int(1))
 	tree.Insert(Int(12))
-	if actualSize := tree.Size(); actualSize != 8 {
+	if actualSize := tree.Len(); actualSize != 8 {
 		t.Errorf("Got %v expected 8", actualSize)
 	}
 	if actual := tree.Search(Int(5)); actual != true {
@@ -31,7 +31,7 @@ func TestTreeSize(t *testing.T) {
 	if actualAfterDelete := tree.Search(Int(8)); actualAfterDelete != false {
 		t.Errorf("Got %v expected false", actualAfterDelete)
 	}
-	if sizeAfterDelete := tree.Size(); sizeAfterDelete != 7 {
+	if sizeAfterDelete := tree.Len(); sizeAfterDelete != 7 {
 		t.Errorf("Got %v expected 7", sizeAfterDelete)
 	}
 	s := make([]Value, 7)
