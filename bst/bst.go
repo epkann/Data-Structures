@@ -1,6 +1,8 @@
 // Package bst implements a non-self-balancing binary search tree.
 package bst
 
+import "fmt"
+
 // Value must be comparable by a less method.
 type Value interface {
 	Less(other Value) bool
@@ -35,7 +37,7 @@ func (tree *Tree) Search(v Value) bool {
 	for h != nil {
 		if !h.Value.Less(v) && !v.Less(h.Value) {
 			return true
-		} 
+		}
 		if h.Value.Less(v) {
 			h = h.right
 		} else {
@@ -62,7 +64,7 @@ func (tree *Tree) Insert(v Value) {
 				h.left = n
 				n.parent = h
 				break
-			} 
+			}
 			h = h.left
 		} else {
 			if h.right == nil {
@@ -88,7 +90,7 @@ func (tree *Tree) Delete(v Value) {
 				tree.transplant(h, h.right)
 			case h.right == nil:
 				tree.transplant(h, h.left)
-			default: 
+			default:
 				y := minimum(h.right) // find successor node
 				if y.parent != h {
 					tree.transplant(y, y.right)
@@ -101,7 +103,7 @@ func (tree *Tree) Delete(v Value) {
 			}
 			tree.size--
 			return
-		} 
+		}
 		if v.Less(h.Value) {
 			h = h.left
 		} else {
@@ -133,21 +135,90 @@ func minimum(n *node) *node {
 	return n
 }
 
-// InOrder returns all values in-order.
-func (tree *Tree) InOrder() []Value {
-	values := make([]Value, 0, tree.size)
-	n := tree.head
-	traverse(n, &values)
-	return values
+// Order specifies the order in which the tree is traversed.
+type Order int
+
+const (
+	Ascending Order = iota
+	Descending
+)
+
+// Traverse traverses through the tree according to the given order.
+// For each element, it calls handle.
+// Traversal continues as long as handle returns true.
+func (t *Tree) Traverse(ord Order, handle func(*Value) bool) {
+	n := t.head
+	goOn := true
+	switch ord {
+	case Ascending:
+		for {
+			goOn = ascending(n, n, handle)
+			if !goOn {
+				break
+			}
+		}
+	case Descending:
+		for {
+			goOn = descending(n, n, handle)
+			if !goOn {
+				break
+			}
+		}
+	default:
+		panic("unknown order")
+	}
 }
 
-// Traverse traverses a tree in-order starting from the passed node.
-func traverse(n *node, values *[]Value) {
+// Ascending traverses the tree in ascending order and calls handle for each element.
+// Traversal continues as long as handle returns true.
+func ascending(n *node, root *node, handle func(*Value) bool) bool {
 	if n == nil {
-		return
+		if n == root {
+			return false
+		}
+		return true
 	}
-	traverse(n.left, values)
-	*values = append(*values, n.Value)
-	traverse(n.right, values)
-	return
+	if !ascending(n.left, root, handle) {
+		return false
+	}
+	if !handle(&n.Value) {
+		return false
+	}
+	if !ascending(n.right, root, handle) {
+		return false
+	}
+	return true
+}
+
+// Descending traverses the tree in descending order and calls handle for each element.
+// Traversal continues as long as handle returns true.
+func descending(n *node, root *node, handle func(*Value) bool) bool {
+	if n == nil {
+		if n == root {
+			return false
+		}
+		return true
+	}
+	if !descending(n.right, root, handle) {
+		return false
+	}
+	if !handle(&n.Value) {
+		return false
+	}
+	if !descending(n.left, root, handle) {
+		return false
+	}
+	return true
+}
+
+// PrintValues prints n ascending values in the tree.
+func PrintValues(n int, t *Tree) {
+	t.Traverse(Ascending, func(v *Value) bool {
+		if n <= 0 {
+			return false
+		}
+		n--
+		fmt.Println(*v)
+		return true
+	})
 }

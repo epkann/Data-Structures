@@ -34,18 +34,4 @@ func TestTree(t *testing.T) {
 	if sizeAfterDelete := tree.Len(); sizeAfterDelete != 7 {
 		t.Errorf("Got %v expected 7", sizeAfterDelete)
 	}
-	s := make([]Value, 7)
-	s[0] = Int(1)
-	s[1] = Int(2)
-	s[2] = Int(3)
-	s[3] = Int(5)
-	s[4] = Int(11)
-	s[5] = Int(12)
-	s[6] = Int(13)
-	values := tree.InOrder()
-	for i, v := range values {
-		if v != s[i] {
-			t.Errorf("Got %v expected %v", values, s)
-		}
-	}
 }
